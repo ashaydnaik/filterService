@@ -20,8 +20,33 @@ app.get('/', function(request, response) {
 
 app.post('/filterService/', function(req, res, next) {
   var obj = req.body;
-  obj["age"] = 25;
-  res.send(obj);
+  var payload = obj["payload"];
+
+  var filterResult = payload.filter(function(item){
+    var drm = item["drm"];
+    var episodeCount = item["episodeCount"];
+    if(drm === true && episodeCount > 0) {
+      return item;
+    }
+  });
+
+  console.log("Filtered Result");
+
+  var mapResult = filterResult.map(function(item){
+    return {
+      "image" : item["image"].showImage,
+      "slug" : item["slug"],
+      "title" : item["title"]
+    }
+  });
+
+  var responseObj = {
+    "response" : mapResult
+  }
+
+
+//  obj["age"] = 28;
+  res.send(responseObj);
 });
 
 app.listen(app.get('port'), function() {
