@@ -5,48 +5,55 @@ var app = express();
 
 app.set('port', (process.env.PORT || 5000));
 
-//app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.urlencoded());
 app.use(bodyParser.json());
 
-// views is directory for all template files
-//app.set('views', __dirname + '/views');
-//app.set('view engine', 'ejs');
-
-app.get('/', function(request, response) {
-  response.send('This app is now running');
-//  response.render('pages/index');
+app.use(function (error, req, res, next) {
+  if (error) {
+    sendError(res,"Could not decode request: JSON parsing failed");
+  } else {
+    next();
+  }
 });
 
+app.get('/', function(req, res) {
+  res.send('This app is now running.');
+});
+
+function sendError(res, message) {
+  res.status(400);
+  res.send({
+    "error": message
+  });
+}
+
 app.post('/filterService/', function(req, res, next) {
-  var obj = req.body;
-  var payload = obj["payload"];
+  var payload = req.body["payload"];
 
-  var filterResult = payload.filter(function(item){
-    var drm = item["drm"];
-    var episodeCount = item["episodeCount"];
-    if(drm === true && episodeCount > 0) {
-      return item;
-    }
-  });
+  if(!payload) {
+    sendError(res,"Request must contain a payload.");
+  } else {
+    
+    var filterResult = payload.filter(function(item){
+      var drm = item["drm"];
+      var episodeCount = item["episodeCount"];
+      if(drm === true && episodeCount > 0) {
+        return item;
+      }
+    });
 
-  console.log("Filtered Result");
+    var mapResult = filterResult.map(function(item){
+      return {
+        "image" : item["image"].showImage,
+        "slug" : item["slug"],
+        "title" : item["title"]
+      }
+    });
 
-  var mapResult = filterResult.map(function(item){
-    return {
-      "image" : item["image"].showImage,
-      "slug" : item["slug"],
-      "title" : item["title"]
-    }
-  });
-
-  var responseObj = {
-    "response" : mapResult
+    res.send({
+      "response" : mapResult
+    });
   }
-
-
-//  obj["age"] = 28;
-  res.send(responseObj);
 });
 
 app.listen(app.get('port'), function() {
