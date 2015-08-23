@@ -13,9 +13,10 @@ app.use(bodyParser.json());
 //app.set('views', __dirname + '/views');
 //app.set('view engine', 'ejs');
 
-//app.get('/', function(request, response) {
+app.get('/', function(request, response) {
+  res.send('This app is now running');
 //  response.render('pages/index');
-//});
+});
 
 app.post('/filterService/', function(req, res, next) {
   var obj = req.body;
