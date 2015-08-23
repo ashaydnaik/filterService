@@ -14,7 +14,7 @@ app.use(bodyParser.json());
 //app.set('view engine', 'ejs');
 
 app.get('/', function(request, response) {
-  res.send('This app is now running');
+  response.send('This app is now running');
 //  response.render('pages/index');
 });
 
