@@ -27,13 +27,13 @@ function sendError(res, message) {
   });
 }
 
-app.post('/filterService/', function(req, res, next) {
+app.post('/', function(req, res, next) {
   var payload = req.body["payload"];
 
   if(!payload) {
     sendError(res,"Request must contain a payload.");
   } else {
-    
+
     var filterResult = payload.filter(function(item){
       var drm = item["drm"];
       var episodeCount = item["episodeCount"];
